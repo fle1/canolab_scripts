@@ -1,9 +1,9 @@
-###################################
-##  Plot to explore fold-change  ##
-##  thresholds (RNAseq)          ##
-##  Fidel Lozano-Elena           ##
-##  CRAG - 16/01/2020            ##
-###################################
+###########################################
+##  Plot to represent fold changes in    ##
+##  metabolomic data respect a control   ##
+##  Fidel Lozano-Elena                   ##
+##  CRAG - 16/01/2020                    ##
+###########################################
 
 # Description of the script ----
 
