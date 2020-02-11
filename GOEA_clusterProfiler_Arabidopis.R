@@ -47,6 +47,12 @@ plotGOgraph(ego, firstSigNodes = 10,useInfo = "all")
 emapplot(ego,showCategory = 30)
 
 # GO level filtering
-ego_filtered<-gofilter(ego, level = 4) # Same functions than above can be apply
+ego_filtered<-gofilter(ego, level = 4) # Same functions than above can be applied to ego_filtered
+
+# Access the data
+ego@result
+
+# Deploy genes in a category
+strsplit(ego@result["GO:0000690","geneID"],split = "/")[[1]]
 
 #### END OF THE SCRIPT
