@@ -170,10 +170,16 @@ GOterms[unlist(parents["GO:0006950"])]
 children["GO:0006950"]
 GOterms[unlist(children["GO:0006950"])]
 
-
-### 4 - REPRESENT GENES OF INTEREST
+# Create lists of genes annotated in a single term
 
 DE<-read.delim("DEG.txt")
+colnames(DE)
+myset<-subset(DE,FDR<0.05&abs(logFC)>log(2))
+myset<-myset[which(rownames(myset)%in%GO2TAIR[["GO:0006950"]]),c("ID","logFC","GeneName","Description")]
+
+write.table(x = myset, file = "Response_to_stress_DEG.txt",sep = "\t",col.names = TRUE,row.names = FALSE,quote = FALSE)
+
+### 4 - REPRESENT GENES OF INTEREST
 
 png("Stress_genes.png",width = 18,height = 24,units = "cm",res=400)
 go_heatmap(genes = rownames(subset(DE,FDR<0.05&abs(logFC)>log(2))),
