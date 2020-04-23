@@ -21,11 +21,8 @@ library(clusterProfiler)
 library(org.At.tair.db)
 
 ### 1 - LOAD AND PARSE ANNOTATION DATA
-# Download Plant Slim annotations (current.geneontology.org/ontology/subsets/goslim_plant.obo)
-download.file(url = "current.geneontology.org/ontology/subsets/goslim_plant.obo",
-              destfile = "./goslim_plant.obo")
-# Read Plant Slim Annotations
-go_slim<-get_ontology("./goslim_plant.obo", propagate_relationships = "is_a", extract_tags = "minimal")
+# Get Plant Slim annotations(Original obo file from current.geneontology.org/ontology/subsets/goslim_plant.obo)
+go_slim<-get_ontology(file = "https://raw.githubusercontent.com/fle1/canolab_scripts/master/useful_data/goslim_plant.obo", propagate_relationships = "is_a", extract_tags = "minimal")
 
 # Load all Arabidopsis GO annotations and mapping to genes
 GO2TAIR <- as.list(org.At.tairGO2ALLTAIRS)
