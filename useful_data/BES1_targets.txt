@@ -1,4 +1,4 @@
-# High confidence BES1 targets from Sun et al., 2010 (Developmental cell)
+# Experimentally tested BES1 targets from Yu et al., 2011 (The Plant Journal)
 ID
 AT1G01060
 AT1G01190
