@@ -32,7 +32,7 @@ ego<-enrichKEGG(gene     = mygenes,
 head(summary(ego))
 
 # Save results in form of data.frame
-myresult<-ego@result
+myresults<-ego@result
 
 # Representations
 ## Dotplot:
@@ -44,7 +44,40 @@ barplot(keggresults,showCategory = 15,title="")
 ## EMAP-plot:
 emapplot(ego,showCategory = 30)
 
-# Deploy genes in a category
+# Represent enrichment values in form of barplots
+## Change margins, so GO description is readable
+par(mar=c(5,18,2,2)+0.1)
+# Only signficant categories
+sigs<-myresults[which(myresults$p.adjust<0.15),]
+{
+  barplot(rev(-log(sigs$p.adjust)),
+          horiz = TRUE,
+          names.arg = rev(sigs$Description),
+          cex.names = 1,
+          col = heat.colors(n=max(sigs$Count))[rev(sigs$Count[order(sigs$Count,decreasing = TRUE)])],
+          las = 1, 
+          xlab = "-log(adj. p-value)", 
+          main = "GOSlimEA - My genes")
+  # Add guides
+  abline(v = seq(0,-log(min(as.numeric(sigs$p.adjust))),2.5),
+         lty = 3,
+         col = "gray65")
+  # Add line for default significance tHreshold
+  abline(v = -log(0.05),
+         lty = 2, 
+         col = "darkgreen")
+  # Add legend with color scale limits with the number of annotated genes per GO slim
+  legend(x = "bottomright",
+         legend = c(paste(max(sigs$Count),"genes",sep = " "),paste(min(sigs$Count),"genes",sep = " ")),
+         title = "Nº annotated genes:",
+         pch = 21,
+         bty = "n",
+         pt.bg = heat.colors(n=max(sigs$Count))[c(max(sigs$Count),1)],
+         col = "black"
+  )
+}
+
+# DEPLOY SELECTED CATEGORIES
 strsplit(ego@result["ath00020","geneID"],split = "/")[[1]]
 
 #### END OF THE SCRIPT
