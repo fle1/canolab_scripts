@@ -24,12 +24,15 @@ mygenes<-rownames(subset(DE, FDR<0.05, logFC>log(1.5)))
 myuniverse<-rownames(DE)
 
 # Create ClusterProfiler object (KEGG enrichment pathway)
-ego<-enrichKEGG(gene     = BRL1$Accession.Number,
+ego<-enrichKEGG(gene     = mygenes,
                 universe = keys(org.At.tair.db),
                 organism = "ath")
 
 # Take a look
 head(summary(ego))
+
+# Save results in form of data.frame
+myresult<-ego@result
 
 # Representations
 ## Dotplot:
@@ -40,9 +43,6 @@ barplot(keggresults,showCategory = 15,title="")
 
 ## EMAP-plot:
 emapplot(ego,showCategory = 30)
-
-# Access the data
-ego@result
 
 # Deploy genes in a category
 strsplit(ego@result["ath00020","geneID"],split = "/")[[1]]
