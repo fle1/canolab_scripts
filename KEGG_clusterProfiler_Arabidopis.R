@@ -57,7 +57,7 @@ sigs<-myresults[which(myresults$p.adjust<0.15),]
           col = heat.colors(n=max(sigs$Count))[rev(sigs$Count[order(sigs$Count,decreasing = TRUE)])],
           las = 1, 
           xlab = "-log(adj. p-value)", 
-          main = "GOSlimEA - My genes")
+          main = "KEGG pathways - My genes")
   # Add guides
   abline(v = seq(0,-log(min(as.numeric(sigs$p.adjust))),2.5),
          lty = 3,
@@ -79,5 +79,8 @@ sigs<-myresults[which(myresults$p.adjust<0.15),]
 
 # DEPLOY SELECTED CATEGORIES
 strsplit(ego@result["ath00020","geneID"],split = "/")[[1]]
+
+# Gene names, logFC and Description
+DE[strsplit(ego@result["ath00020","geneID"],split = "/")[[1]],c("logFC","GeneName","Description")]
 
 #### END OF THE SCRIPT
