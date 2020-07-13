@@ -184,3 +184,39 @@ myHSD.test<-function(aov,factor,alpha=0.05) {
   return(table)
   
 }
+
+
+# Modification of myHSD function (see above) for oav object created with sufficient statistics
+
+## Modify the order of the grouping letter, so they match the factor level's order
+myHSD.test.Sufficient<-function(aov,factor,alpha=0.05) {
+    
+    # Check if multcompView is loaded
+    if (!"multcompView" %in% (.packages())) {
+        try(library("multcompView"))
+    }
+    
+    # Check aov argument is oav class
+    if (!"aov"%in%class(lm)) {
+        print("aov argument is not of 'aov' class")
+        stop()
+    }
+    
+    # Levels order:
+    order<-aov$model[,2]
+    # Perform the Tukey test
+    T<-TukeyHSD(x = aov,which = factor,conf.level = 1-alpha)
+    # Obtain the p-values of Tukey in form of a matrix
+    p_matrix<-vec2mat(T[[1]][,4],sep = "-")
+    # Order the p values matrix according to specified order
+    p_matrix<-p_matrix[order,order]
+    # Obtain the letter vector
+    letras<-multcompLetters(p_matrix,threshold = 0.05)
+    # Obtain mean values from lm
+    means<-aov$model[,1]
+    names(means)<-aov$model[,2]
+    # Bind means and letters
+    table<-data.frame(Means=means,Letters=letras$Letters[match(names(letras$Letters),names(means))])
+    return(table)
+    
+}
