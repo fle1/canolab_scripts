@@ -150,3 +150,37 @@ autopoints<-function(x,factors,pos,proportional=FALSE,jitter_factor=1) {
   ## Return the coordinates
   return(cbind(myjitter,unlist(values)))
 }
+
+
+# Modification of Tukey Post-Hoc test included in Agricolae package
+## Modify the order of the grouping letter, so they match the factor level's order
+myHSD.test<-function(aov,factor,alpha=0.05) {
+  
+  # Check if multcompView is loaded
+  if (!"multcompView" %in% (.packages())) {
+    try(library("multcompView"))
+  }
+  
+  # Check aov argument is oav class
+  if (!"aov"%in%class(lm)) {
+    print("aov argument is not of 'aov' class")
+    stop()
+  }
+  
+  # Levels order:
+  order<-levels(aov$model[,2])
+  # Perform the Tukey test
+  T<-TukeyHSD(x = aov,which = factor,conf.level = 1-alpha)
+  # Obtain the p-values of Tukey in form of a matrix
+  p_matrix<-vec2mat(T[[1]][,4],sep = "-")
+  # Order the p values matrix according to specified order
+  p_matrix<-p_matrix[order,order]
+  # Obtain the letter vector
+  letras<-multcompLetters(p_matrix,threshold = 0.05)
+  # Obtain mean values from lm
+  means<-tapply(aov$model[,1],aov$model[,2],mean)
+  # Bind means and letters
+  table<-data.frame(Means=means,Letters=letras$Letters[match(names(letras$Letters),names(means))])
+  return(table)
+  
+}
