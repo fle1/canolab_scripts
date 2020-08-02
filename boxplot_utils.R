@@ -162,7 +162,7 @@ myHSD.test<-function(aov,factor,alpha=0.05) {
   }
   
   # Check aov argument is oav class
-  if (!"aov"%in%class(lm)) {
+  if (!"aov"%in%class(aov)) {
     print("aov argument is not of 'aov' class")
     stop()
   }
@@ -197,7 +197,7 @@ myHSD.test.Sufficient<-function(aov,factor,alpha=0.05) {
     }
     
     # Check aov argument is oav class
-    if (!"aov"%in%class(lm)) {
+    if (!"aov"%in%class(aov)) {
         print("aov argument is not of 'aov' class")
         stop()
     }
