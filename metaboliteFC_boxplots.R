@@ -87,7 +87,7 @@ metabolite_FC_boxplots<-function(
     # Reorder
     if (order == TRUE) {
         val_1<-val_1[order(apply(val_1,1,median),apply(val_2,1,median),decreasing = TRUE),]
-        val_2<-val_2[order(apply(val_1,1,median),apply(val_2,1,median),decreasing = TRUE),]
+        val_2<-val_2[rownames(val_1),]
     }
     
     # Determine plot positions
