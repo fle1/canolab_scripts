@@ -47,7 +47,12 @@ mypfamenrichment<-function(gene_universe,mysubset,description,annotation="Arabid
     my_gene_universe<-my_gene_universe[which(my_gene_universe$locusName%in%gene_universe),]
     
     # Reduce redundancy, put together same genes (isoforms)
-    my_gene_universe<-aggregate(Pfam~locusName,my_gene_universe,paste,collapse=",")
+    if (mean(nchar(as.character(my_gene_universe$locusName))) > 9) {
+        print("isoforms annotation for Arabidopsis will be collapsed")
+        my_gene_universe<-aggregate(Pfam~locusName,my_gene_universe,paste,collapse=",")
+    } else {
+        
+    }
     
     # Give some info:
     print(paste("Your gene universe has",
