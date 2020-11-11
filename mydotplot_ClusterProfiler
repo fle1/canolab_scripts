@@ -1,0 +1,34 @@
+# IN CONSTRUCTION #
+# Script to create from scratch the same dotplots than in ClusterProfiler but with cumstom data
+
+
+# This will be the function
+mydotplot <-function(mydataframe,x,y,colorBy,size = 10) {
+    
+    # Default variables
+}
+# Parse variables first
+
+# Require ggplots
+library("ggplots")
+
+# THIS  
+GO<-data.frame(GO,GeneRatio=GO$Significant/466)
+GO<-GO[order(GO$GeneRatio,decreasing = TRUE),]
+GO$Term<-factor(GO$Term,levels = rev(GO$Term))
+colnames(GO)[c(4,6)]<-c("Counts","p.value")
+GO$p.value<-as.numeric(GO$p.value)
+
+png("GOEA_Downregulated_TopGO.png",18,18,units = "cm",res=300)
+# plot: dot plot
+ggplot(data = GO, aes(x = Counts/446, y = Term, 
+                      size = Counts,color = p.value)) + 
+    geom_point() +
+    scale_color_gradient(low = "red", high = "blue") +
+    theme_bw() + 
+    theme(axis.text=element_text(size = 12)) +
+    ylab("") + 
+    xlab("GeneRatio") + 
+    ggtitle("Downregulated terms")
+
+dev.off()
