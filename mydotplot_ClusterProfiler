@@ -10,7 +10,7 @@ mydotplot <-function(mydataframe,x,y,colorBy,size = 10) {
 # Parse variables first
 
 # Require ggplots
-library("ggplots")
+library("ggplot2")
 
 # THIS  
 GO<-data.frame(GO,GeneRatio=GO$Significant/466)
