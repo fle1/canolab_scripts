@@ -1,0 +1,148 @@
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%
+##
+## Script name: InterPro enrichment functions
+##
+## Purpose of script: Functions to parse annotation file (TAIR10) and identify enrichments in particular domain
+##
+## Author: Fidel Lozano-Elena
+##
+## Date Created: 2020-12-17
+##
+## Copyright (c) Fidel Lozano, 2020
+## Email: fidel.lozano@cragenomica.es
+##
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%
+##
+## Notes: Parsing function adapted to TAIR10 genome. The output annotation file have 3 colums: Genes, domain ID, domain description
+##          The enrichment function takes as an input an annotation file with three columns: 1- Genes, 2-ID, 3-Description.
+##          The table returned by the enrichment function follows the format of the result summary table returned by ClusterProfiler (R package) enrichment functions
+## %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+parse_IPR_annotation<-function(annotation_file, gene_col = 1, domain_col = 2, domain_description_col = 3) {
+    
+    # Generate a table
+    table<-data.frame(Gene = c(), INTERPRO_id = c(), INTERPRO_domains_name = c())
+    
+    # Remove isoform information
+    if (length(which(nchar(as.character(annotation_file[,gene_col])) > 9)) > 0 ) {
+        print("WARNING: Apparentely there is isoform information in the annotation file. These will be deleted")
+        annotation_file[,gene_col]<-substr(as.character(annotation_file[,gene_col]),1,9)
+        }
+    
+    # For verbose
+    unique_genes<-as.character(unique(annotation_file[,gene_col]))
+    time_points<-ceiling(seq(1, length(unique_genes),length.out = 20))
+    counter<-0
+                          
+    # Loop over the annotation file
+    for (i in unique_genes) {
+        
+        # Find and retrieve IPR per gene
+        index<-which(as.character(annotation_file[,gene_col]) == i)
+        domains<-as.character(unique(annotation_file[index,domain_col]))
+        domains<-domains[-which(domains=="NULL")]
+        
+        names<-match(domains,annotation_file[index, domain_col])
+        names<-annotation_file[index[names],domain_description_col]
+        
+        # Generate a table
+        table<-rbind(table,
+                     data.frame(Gene=rep(i,length(domains)),INTERPRO_id=domains,INTERPRO_domains_name=names)
+                     )
+        
+        # Verbose
+        if (i%in%unique_genes[time_points]) {
+            print(paste(counter,"% of the file parsed"))
+            counter<-counter+5
+        }
+    }
+    
+    print("100% of the file parsed. DONE")
+    
+    # Return the table
+    return(table)
+}
+
+
+InterPro_EA<-function(genes, background, annotation_file, test = "fisher",cutoff_pval = 1) {
+    
+    #0. Check the test chosen is correct
+    if (!(test %in% c("fisher","hypergeometric","chi-square"))) {
+        print("Selected test must be one of: fisher, hypergeometric, chi-square")
+        stop()
+    }
+    
+    # CORE script
+    #1. Identify which domains are represented in the user genes and save in a list (Avoid testing all domains)
+    index<-c()
+    for (i in mygenes) {
+        index<-c(index,grep(i,annotation_file[,1]))
+    }
+    domains2test<-as.character(annotation_file[index,2])
+    domains2test<-unique(domains2test)
+    description<-as.character(annotation_file[match(domains2test,annotation_file[,2]),3])
+    
+    #2. Other data to be contained in the returned table. Same format than ClusterProfiler package
+    GeneRatio<-c()
+    BgRatio<-c()
+    pval<-c()
+    geneID<-c()
+    Count<-c()
+    
+    #3. Loop over the list of domains and generate contingency table per domain
+    for (i in domains2test) {
+        
+        # Create contingency table
+        contingency_table<-matrix(nrow = 2,ncol = 2,dimnames = list(c("mygenes","notmygenes"),c("mydomain","notmydomain")))
+        
+        # Genes in my domain and not in mydomaini
+        mydomain<-unique(as.character(annotation_file[grep(i,annotation_file[,2]),1]))
+        notmydomain<-setdiff(unique(as.character(annotation_file[,1])),mydomain)
+        
+        #3.1 How many user genes have this domain
+        contingency_table[1,1] <- length(intersect(mygenes,mydomain))
+        
+        #3.2 How many user genes not having this domain
+        contingency_table[1,2] <- length(intersect(mygenes,notmydomain))
+        
+        #3.2 How many not user genes with this domain
+        contingency_table[2,1] <- length(intersect(x = setdiff(background,mygenes),y = mydomain))
+        
+        #3.4 How many not user genes not having this domain
+        contingency_table[2,2] <- length(intersect(x = setdiff(background,mygenes),y = notmydomain))
+        
+        #3.5. Enrichment test
+        if (test == "fisher") {
+            pval<-c(pval,fisher.test(contingency_table)$p.value)
+        } else if (test == "hypergeometric") {# Not sure of this one. Revise
+            pval<-c(pval,1-phyper(q = contingency_table[1,1],
+                                m = colSums(contingency_table)[1],
+                                n = colSums(contingency_table)[2],
+                                k = rowSums(contingency_table)[1]))
+        } else if (test == "chi-square") {
+            pval<-c(pval,chisq.test(contingency_table)$p.value)
+        }
+        
+        #3.6. Data to be contained in the returned table
+        GeneRatio<-c(GeneRatio,paste(contingency_table[1,1],contingency_table[1,2],sep = "/"))
+        BgRatio<-c(BgRatio,paste(contingency_table[2,1],contingency_table[2,2],sep = "/"))
+        geneID<-c(geneID, paste(intersect(mygenes,mydomain),collapse = "/"))
+        Count<-c(Count,length(intersect(mygenes,mydomain)))
+    }
+    
+    #4. Build table
+    table<-data.frame(ID=domains2test, Description=description,GeneRatio=GeneRatio,BgRatio=BgRatio,pvalue=pval,p.adjust=p.adjust(pval,method = "BH"),geneID=geneID,Count=Count)
+    
+    #4.1 Order table
+    table<-table[order(table$pval,decreasing = FALSE),]
+    
+    #4.2 Output only domains under the cutoff value
+    if (length(which(table$pvalue > cutoff_pval)) > 0) {
+        table<-table[-which(table$pvalue > cutoff_pval),] 
+    }
+    
+    #4.3 Output table
+    return(table)
+}
+
