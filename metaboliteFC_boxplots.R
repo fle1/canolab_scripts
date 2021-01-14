@@ -107,7 +107,7 @@ metabolite_FC_boxplots<-function(
         ## Horizontal
         
         ### From top to bottom
-        boxplot(t(val_2[c(nrow(val_2):1),]),at = pos[seq(1,length(pos)-1,by = 2)],cex=0.7,las=2,col = color[2], outline = FALSE, horizontal = horizontal,ylim=c(min(min(val_1,na.rm = T),min(val_2,na.rm = T)),max(max(val_1,na.rm = T),max(val_2,na.rm = T))),yaxt = "n",xlab = if (logarithmic==TRUE & ylab == "Relative change"){ylab="log(Relative change)"}else{ylab=ylab},main=title)
+        boxplot(t(val_2[c(nrow(val_2):1),]),at = pos[seq(1,length(pos)-1,by = 2)],cex=0.7,las=2,col = color[2], outline = FALSE, horizontal = horizontal,ylim=c(min(min(val_1,na.rm = T),xlim=c(0,max(pos)+1),min(val_2,na.rm = T)),max(max(val_1,na.rm = T),max(val_2,na.rm = T))),yaxt = "n",xlab = if (logarithmic==TRUE & ylab == "Relative change"){ylab="log(Relative change)"}else{ylab=ylab},main=title)
         boxplot(t(val_1[c(nrow(val_1):1),]),at = pos[seq(2,length(pos),by = 2)],cex=0.7,las=2,col = color[1],outline = FALSE, horizontal = horizontal, add = TRUE,yaxt = "n")
         ### Draw y-axis
         axis(side = 2, at = (pos[seq(1,length(pos)-1,by = 2)]+pos[seq(2,length(pos),by = 2)])/2,
@@ -130,7 +130,7 @@ metabolite_FC_boxplots<-function(
         } else {
             
         ## Vertical boxplot
-        boxplot(t(val_1),at = pos[seq(1,length(pos)-1,by = 2)],cex=0.7,las=2,col = color[1],outline = FALSE, horizontal = horizontal,ylim=c(min(min(val_1,na.rm = T),min(val_2,na.rm = T)),max(max(val_1,na.rm = T),max(val_2,na.rm = T))),xaxt = "n",ylab = if (logarithmic==TRUE & ylab == "Relative change"){ylab="log(Relative change)"}else{ylab=ylab},main=title)
+        boxplot(t(val_1),at = pos[seq(1,length(pos)-1,by = 2)],cex=0.7,las=2,col = color[1],outline = FALSE, horizontal = horizontal,ylim=c(min(min(val_1,na.rm = T),xlim=c(0,max(pos)+1),min(val_2,na.rm = T)),max(max(val_1,na.rm = T),max(val_2,na.rm = T))),xaxt = "n",ylab = if (logarithmic==TRUE & ylab == "Relative change"){ylab="log(Relative change)"}else{ylab=ylab},main=title)
         boxplot(t(val_2),at = pos[seq(2,length(pos),by = 2)],cex=0.7,las=2,col = color[2], outline = FALSE, horizontal = horizontal, add = TRUE,xaxt = "n")
         
         ### Draw y-axis
