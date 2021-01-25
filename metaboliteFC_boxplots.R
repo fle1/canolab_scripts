@@ -95,10 +95,15 @@ metabolite_FC_boxplots<-function(
     n_metabolites<-nrow(genotype1_matrix)
     pos<-c(seq(1,n_metabolites*2))
     
-    ## Modify the position according the separation factor
-    for (i in seq(1,n_metabolites*2)) {
-        if (i%in%c(seq(3,n_metabolites*2,by = 2))) {
-            pos[i:length(pos)]<-pos[i:length(pos)]+separation_factor
+   ## Modify the position according the separation factor
+    # Avoid errors if there is 2 or less metabolites
+    if (n_metabolites < 2) {
+        pos<-c(seq(1,n_metabolites*2))
+    } else {
+        for (i in seq(1,n_metabolites*2)) {
+            if (i%in%c(seq(3,n_metabolites*2,by = 2))) {
+                pos[i:length(pos)]<-pos[i:length(pos)]+separation_factor
+            }
         }
     }
     
