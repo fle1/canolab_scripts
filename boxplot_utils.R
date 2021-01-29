@@ -176,7 +176,7 @@ myHSD.test<-function(aov,factor,alpha=0.05) {
   # Order the p values matrix according to specified order
   p_matrix<-p_matrix[order,order]
   # Obtain the letter vector
-  letras<-multcompLetters(p_matrix,threshold = 0.05)
+  letras<-multcompLetters(p_matrix,threshold = alpha)
   # Obtain mean values from lm
   means<-tapply(aov$model[,1],aov$model[,2],mean)
   # Bind means and letters
@@ -211,7 +211,7 @@ myHSD.test.Sufficient<-function(aov,factor,alpha=0.05) {
     # Order the p values matrix according to specified order
     p_matrix<-p_matrix[order,order]
     # Obtain the letter vector
-    letras<-multcompLetters(p_matrix,threshold = 0.05)
+    letras<-multcompLetters(p_matrix,threshold = alpha)
     # Obtain mean values from lm
     means<-aov$model[,1]
     names(means)<-aov$model[,2]
