@@ -76,7 +76,7 @@ InterPro_EA<-function(genes, background, annotation_file, test = "fisher",cutoff
     # CORE script
     #1. Identify which domains are represented in the user genes and save in a list (Avoid testing all domains)
     index<-c()
-    for (i in mygenes) {
+    for (i in genes) {
         index<-c(index,grep(i,annotation_file[,1]))
     }
     domains2test<-as.character(annotation_file[index,2])
