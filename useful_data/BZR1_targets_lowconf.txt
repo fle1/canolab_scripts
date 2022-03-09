@@ -1,3 +1,5 @@
+# Low-stringency potential BZR1 binding target genes from Sun et al., 2010 (Developmental cell)
+ID
 AT1G01030
 AT1G01040
 AT1G01100
